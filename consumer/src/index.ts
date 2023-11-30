@@ -13,7 +13,7 @@ export interface Env {
 }
 
 type Result = {
-  numCloudflareLinks: number;
+  links: string[];
   screenshot: ArrayBuffer;
 };
 
@@ -35,19 +35,20 @@ export default {
         waitUntil: "load",
       });
 
-      const numCloudflareLinks = await page.$$eval("a", (links) => {
-        links = links.filter((link) => {
+      const links = await page.$$eval("a", (links) => {
+        links = links.map((link) => {
           try {
-            return new URL(link.href).hostname.includes("cloudflare.com");
-          } catch {
-            return false;
+            new URL(link.href);
+            return link.href;
+          } catch (error) {
+            return null;
+
           }
-        });
-        return links.length;
+        }).filter((link) => link !== null) as string[];
+        return links;
       });
 
-      // to crawl recursively - uncomment this!
-      /*await page.$$eval("a", async (links) => {
+      await page.$$eval("a", async (links) => {
         const urls: MessageSendRequest<Message>[] = links.map((link) => {
           return {
             body: {
@@ -58,7 +59,7 @@ export default {
         try {
           await env.CRAWLER_QUEUE.sendBatch(urls);
         } catch {} // do nothing, might've hit subrequest limit
-      });*/
+      });
 
       await page.setViewport({
         width: 1920,
@@ -67,7 +68,7 @@ export default {
       });
 
       return {
-        numCloudflareLinks,
+        links,
         screenshot: ((await page.screenshot({ fullPage: true })) as Buffer)
           .buffer,
       };
