@@ -6,14 +6,14 @@ usage_model = "unbound"
 
 browser = { binding = "CRAWLER_BROWSER", type = "browser" }
 kv_namespaces = [
-{ binding = "CRAWLER_SCREENSHOTS_KV", id = "<KV namespace id here>", preview_id = "<KV namespace id here>" },
-{ binding = "CRAWLER_LINKS_KV", id = "<KV namespace id here>", preview_id = "<KV namespace id here>" }
+{ binding = "CRAWLER_SCREENSHOTS_KV", id = "dd8a39d46f87475d9f0a2617abf3fdd2", preview_id = "51142c2717eb47aca8cffdf589fdc2f1" },
+{ binding = "CRAWLER_LINKS_KV", id = "d320aafc832a41c39b20691445893d6b", preview_id = "1083f974a6f3447397d62aa784cd01bf" }
 ]
 
 [[queues.consumers]]
-  queue = "<queue name>"
-  max_batch_timeout = 60 
+  queue = "link-crawler"
+  max_batch_timeout = 60
 
 [[queues.producers]]
- queue = "<queue name>"
+ queue = "link-crawler"
  binding = "CRAWLER_QUEUE"
