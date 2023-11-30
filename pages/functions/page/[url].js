@@ -22,7 +22,7 @@ export async function onRequest(context) {
     try {
       result.push({
         key: parseInt(key.name.split("-")[1]),
-        numCloudflareLinks:
+        links:
           (await context.env.CRAWLER_LINKS_KV.get(key.name)) ?? "-",
         screenshot: screenshot ? uint8ToBase64(new Uint8Array(screenshot)) : "", // Base64 encode screenshot contents
       });
@@ -35,12 +35,15 @@ export async function onRequest(context) {
   result.reverse(); // but we want reverse chronological order!
 
   let tableString = "";
+  let rowId = 1;
   for (const res of result) {
+    const links = JSON.parse(res.links);
     tableString = tableString.concat(
-      `<tr><td>${new Date(res.key).toString()}</td><td>${
-        res.numCloudflareLinks
-      }</td><td><img src="data:image/png;base64,${res.screenshot}" /></td></tr>`
+      `<tr><td>${new Date(res.key).toString()}</td>
+      <td><span class="links-btn" id="${`links-${rowId}`}>${links.length}</span></td>
+      <td><img src="data:image/png;base64,${res.screenshot}" /></td></tr>`
     );
+    rowId++;
   }
 
   const html = `<!DOCTYPE html>
@@ -70,7 +73,7 @@ export async function onRequest(context) {
            <thead>
                <tr>
                   <th>Date</th>
-                  <th>Number of Cloudflare.com Links</th>
+                  <th>Link Count/th>
                   <th>Screenshot</th>
                </tr>
            </thead>
