@@ -119,10 +119,10 @@ export default {
       }
 
       try {
-        const { numCloudflareLinks, screenshot } = await crawlPage(url);
+        const { links, screenshot } = await crawlPage(url);
         await env.CRAWLER_LINKS_KV.put(
           resultKey,
-          numCloudflareLinks.toString(),
+          JSON.stringify(links),
           { metadata: { date: timestamp } }
         );
         await env.CRAWLER_SCREENSHOTS_KV.put(resultKey, screenshot, {
